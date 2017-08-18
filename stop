@@ -1,0 +1,3 @@
+#!/bin/bash
+docker stop faiss-image-server
+docker rm faiss-image-server

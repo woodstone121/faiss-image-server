@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package faiss;
+
+service ImageIndex {
+  rpc Add (AddRequest) returns (SimpleReponse) {}
+  rpc Remove (IdRequest) returns (SimpleReponse) {}
+  rpc Search (SearchRequest) returns (SearchReponse) {}
+  rpc Fetch (FetchRequest) returns (SimpleReponse) {}
+  rpc Info (Empty) returns (SimpleReponse) {}
+  rpc Save (Empty) returns (SimpleReponse) {}
+  rpc Train (Empty) returns (SimpleReponse) {}
+  rpc Import (ImportRequest) returns (SimpleReponse) {}
+  rpc Migrate (Empty) returns (SimpleReponse) {}
+}
+
+message AddRequest {
+  int64 id = 1;
+  string url = 2;
+  int64 created_at_ts = 3;
+}
+
+message IdRequest {
+  int64 id = 1;
+}
+
+message SearchRequest {
+  int64 id = 1;
+  int32 count = 2;
+}
+
+message FetchRequest {
+  repeated AddRequest items = 1;
+}
+
+message ImportRequest {
+  string path = 1;
+}
+
+message SimpleReponse {
+  string message = 1;
+}
+
+message SearchReponse {
+  repeated int64 ids = 1;
+  repeated float scores = 2;
+}
+
+message Empty {
+}

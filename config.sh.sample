@@ -1,0 +1,3 @@
+#!/bin/bash
+# rename this to config.sh
+OUTPUT_PATH="./lib" # your ruby library directory
