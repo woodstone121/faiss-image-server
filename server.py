@@ -46,7 +46,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Faiss Image Server')
     parser.add_argument('--log', help='log filepath')
     parser.add_argument('--rails_env', help='rails env')
-    parser.add_argument('--train_count', type=int, default=100000, help='rails env')
+    parser.add_argument('--train_count', type=int, default=100000, help='max train count')
+    parser.add_argument('--save_filepath', default='models/image.index', help='save file path')
+    parser.add_argument('--model', default='inception_v4', help='Inception model version')
     args = parser.parse_args()
 
     if args.log:

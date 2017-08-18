@@ -28,18 +28,18 @@ def path_to_embedding(filepath):
 
 
 class FaissImageIndex(pb2_grpc.ImageIndexServicer):
-    SAVE_FILEPATH = 'models/image.index'
 
     def __init__(self, args):
+        self.save_filepath = args.save_filepath
         self.max_train_count = args.train_count
         t0 = time.time()
-        self.embedding_service = ImageEmbeddingService('inception_v4')
+        self.embedding_service = ImageEmbeddingService(args.model)
         logging.info("embedding service loaded %.2f s" % (time.time() - t0))
 
-        if file_io.file_exists(self.SAVE_FILEPATH):
+        if file_io.file_exists(self.save_filepath):
             self.faiss_index = self._new_index()
             t0 = time.time()
-            self.faiss_index.restore(self.SAVE_FILEPATH)
+            self.faiss_index.restore(self.save_filepath)
             logging.info("%d items restored %.2f s", self.faiss_index.ntotal(), time.time() - t0)
         else:
             self.faiss_index = self._new_trained_index()
@@ -149,8 +149,8 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
 
     def save(self):
         t0 = time.time()
-        self.faiss_index.save(self.SAVE_FILEPATH)
-        logging.info("index saved to %s, %.3f s", self.SAVE_FILEPATH, time.time() - t0)
+        self.faiss_index.save(self.save_filepath)
+        logging.info("index saved to %s, %.3f s", self.save_filepath, time.time() - t0)
 
     def Add(self, request, context):
         if self._more_recent_emb_file_exists(request):
