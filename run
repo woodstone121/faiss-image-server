@@ -27,4 +27,4 @@ docker run -d --name faiss-image-server -it -p 50051:50051 -u `id -u $USER` \
          daangn/faiss-image-server server.py --log log/faiss_image_server.log \
            --save_filepath models/image.index \
            --model $MODEL \
-           --rails_env "$ENV"
+           --debug

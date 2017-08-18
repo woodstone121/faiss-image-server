@@ -45,10 +45,11 @@ def serve(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Faiss Image Server')
     parser.add_argument('--log', help='log filepath')
-    parser.add_argument('--rails_env', help='rails env')
+    parser.add_argument('--debug', dest='debug', action='store_true', help='debug')
     parser.add_argument('--train_count', type=int, default=100000, help='max train count')
     parser.add_argument('--save_filepath', default='models/image.index', help='save file path')
     parser.add_argument('--model', default='inception_v4', help='Inception model version')
+    parser.set_defaults(debug=False)
     args = parser.parse_args()
 
     if args.log:
@@ -58,8 +59,10 @@ if __name__ == '__main__':
     formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s - %(message)s')
     handler.setFormatter(formatter)
     root = logging.getLogger()
-    level = args.rails_env == 'production' and logging.INFO or logging.DEBUG
+    level = args.debug and logging.DEBUG or logging.INFO
     root.setLevel(level)
     root.addHandler(handler)
+    if args.debug:
+        logging.debug('debug mode enabled')
 
     serve(args)
