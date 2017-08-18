@@ -25,6 +25,7 @@ docker run -d --name faiss-image-server -it -p 50051:50051 -u `id -u $USER` \
          -v "${ROOT}/models":/app/models \
          -v "${ROOT}/log":/app/log \
          daangn/faiss-image-server server.py --log log/faiss_image_server.log \
+           --train_count 100000 \
            --save_filepath models/image.index \
            --model $MODEL \
            --debug
