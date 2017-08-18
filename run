@@ -1,4 +1,5 @@
 #!/bin/bash
+source config.sh
 ROOT="$(pwd)/$(dirname "$0")"
 MODEL="inception_v4"
 
@@ -20,12 +21,12 @@ elif [ $MODEL == 'inception_v3' ]; then
   fi
 fi
 
-docker run -d --name faiss-image-server -it -p 50051:50051 -u `id -u $USER` \
+docker run -d --name $CONTAINER_NAME -it -p $PORT:50051 -u `id -u $USER` \
          -v "${ROOT}/embeddings":/app/embeddings \
          -v "${ROOT}/models":/app/models \
          -v "${ROOT}/log":/app/log \
-         daangn/faiss-image-server server.py --log log/faiss_image_server.log \
-           --train_count 100000 \
+         daangn/faiss-image-server server.py --log "log/${CONTAINER_NAME}.log" \
+           --train_count $TRAIN_COUNT \
            --save_filepath models/image.index \
            --model $MODEL \
            --debug

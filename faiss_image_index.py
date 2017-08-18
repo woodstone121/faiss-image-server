@@ -114,7 +114,7 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
         xb = self._path_to_xb(filepaths)
         logging.info("%d embeddings loaded %.3f s", xb.shape[0], time.time() - t0)
 
-        ids = np.array(map(path_to_id, filepaths), dtype=np.int64)
+        ids = np.array(list(map(path_to_id, filepaths)), dtype=np.int64)
 
         if train_count < 40000:
             d = self.embedding_service.dim()

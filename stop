@@ -1,3 +1,4 @@
 #!/bin/bash
-docker stop faiss-image-server
-docker rm faiss-image-server
+source config.sh
+docker stop $CONTAINER_NAME
+docker rm $CONTAINER_NAME

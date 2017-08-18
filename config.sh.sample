@@ -1,3 +1,6 @@
 #!/bin/bash
 # rename this to config.sh
 OUTPUT_PATH="./lib" # your ruby library directory
+CONTAINER_NAME="faiss-image-server"
+PORT=50051
+TRAIN_COUNT=100000
