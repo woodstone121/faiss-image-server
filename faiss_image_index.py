@@ -153,6 +153,7 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
         logging.info("index saved to %s, %.3f s", self.save_filepath, time.time() - t0)
 
     def Add(self, request, context):
+        logging.debug('add - id: %d', request.id)
         if self._more_recent_emb_file_exists(request):
             return pb2.SimpleReponse(message='Already added, %s!' % request.id)
 
@@ -261,6 +262,7 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
         return pb2.SimpleReponse(message='%s' % self.faiss_index.ntotal())
 
     def Remove(self, request, context):
+        logging.debug('remove - id: %d', request.id)
         ids = np.array([request.id], dtype=np.int64)
         self.faiss_index.remove_ids(ids)
 
