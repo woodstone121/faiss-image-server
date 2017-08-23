@@ -32,6 +32,7 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
     def __init__(self, args):
         self.save_filepath = args.save_filepath
         self.max_train_count = args.train_count
+        self._max_nlist = args.max_nlist
         t0 = time.time()
         self.embedding_service = ImageEmbeddingService(args.model)
         logging.info("embedding service loaded %.2f s" % (time.time() - t0))
@@ -121,7 +122,8 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
             faiss_index.add(xb, ids)
             return faiss_index
 
-        faiss_index = self._new_index(nlist=int(train_count / 39))
+        nlist = min(self._max_nlist, int(train_count / 39))
+        faiss_index = self._new_index(nlist=nlist)
 
         logging.info("Training...")
         t0 = time.time()
