@@ -53,6 +53,10 @@ class FaissTrainIndex(FaissIndex):
     def save(self, filepath):
         faiss.write_index(self.index2, filepath)
 
+    def reset(self):
+        self.index2.reset()
+        self.index2 = None
+
 
 class FaissFastIndex(FaissTrainIndex):
     def __init__(self, d):
@@ -71,6 +75,7 @@ class FaissShrinkedIndex(FaissTrainIndex):
     # nlist  numCentroids
     def __init__(self, d, nlist=100):
         m = 8 # number of subquantizers
+        nlist = min(nlist, 4096)
 
         quantizer = faiss.IndexFlatL2(d)
         self.index2 = faiss.IndexIVFPQ(quantizer, d, nlist, m, 8)
@@ -79,7 +84,12 @@ class FaissShrinkedIndex(FaissTrainIndex):
         #quantizer.this.disown()
         self.quantizer = quantizer
 
-        self.index2.nprobe = 20
+        self.index2.nprobe = 32
+
+    def train(self, xb, ids):
+        #self.index2.polysemous_ordering = True
+        super(FaissShrinkedIndex, self).train(xb, ids)
+        #self.index2.polysemous_ht = 54 # the Hamming threshold
 
     def reset(self):
         self.quantizer.reset()
@@ -89,16 +99,19 @@ class FaissShrinkedIndex(FaissTrainIndex):
 
 
 class FaissShrinkedIndex2(FaissTrainIndex):
-    def __init__(self, d):
-        nlist = 100 # numCentroids
-        m = 8 # numQuantizers
-
+    def __init__(self, d, nlist=100):
         self.index = faiss.IndexPQ(d, 16, 8)
         self.index.nprobe = 10
         self.index2 = faiss.IndexIDMap(self.index)
 
 
-class FaissReducedIndex(FaissTrainIndex):
+class FaissOPQIndex(FaissTrainIndex):
+    def __init__(self, d, nlist=100):
+        self.index2 = faiss.index_factory(d, 'OPQ32_128,IVF4096,PQ32')
+        self.index2.nprobe = 16
+
+
+class FaissPCAIndex(FaissTrainIndex):
     def __init__(self, d):
         d2 = 256
         nlist = 100 # numCentroids

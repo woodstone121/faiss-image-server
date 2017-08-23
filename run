@@ -8,16 +8,16 @@ mkdir -p "${ROOT}/models"
 mkdir -p "${ROOT}/log"
 
 if [ $MODEL == 'inception_v4' ]; then
-  if [ ! -f models/inception_v4.ckpt ]; then
+  if [ ! -f "${ROOT}/models/inception_v4.ckpt" ]; then
     wget http://download.tensorflow.org/models/inception_v4_2016_09_09.tar.gz
     tar xfz inception_v4_2016_09_09.tar.gz && rm inception_v4_2016_09_09.tar.gz
-    mv inception_v4.ckpt models/
+    mv inception_v4.ckpt "${ROOT}/models/"
   fi
 elif [ $MODEL == 'inception_v3' ]; then
-  if [ ! -f models/inception_v3.ckpt ]; then
+  if [ ! -f "${ROOT}/models/inception_v3.ckpt" ]; then
     wget http://download.tensorflow.org/models/inception_v3_2016_08_28.tar.gz
     tar xfz inception_v3_2016_08_28.tar.gz && rm inception_v3_2016_08_28.tar.gz
-    mv inception_v3.ckpt models/
+    mv inception_v3.ckpt "${ROOT}/models/"
   fi
 fi
 
@@ -27,6 +27,6 @@ docker run -d --name $CONTAINER_NAME -it -p $PORT:50051 -u `id -u $USER` \
          -v "${ROOT}/log":/app/log \
          daangn/faiss-image-server server.py --log "log/${CONTAINER_NAME}.log" \
            --train_count $TRAIN_COUNT \
-           --save_filepath models/image.index \
+           --save_filepath models/${CONTAINER_NAME}.index \
            --model $MODEL \
            --debug

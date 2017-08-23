@@ -99,7 +99,7 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
 
         logging.info("File loading...")
         t0 = time.time()
-        all_filepaths = list(glob.iglob('embeddings/*/*.emb'))
+        all_filepaths = glob.glob('embeddings/*/*.emb')
         total_count = len(all_filepaths)
         logging.info("%d files %.3f s", total_count, time.time() - t0)
 
@@ -112,17 +112,16 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
         filepaths = all_filepaths[:train_count]
         t0 = time.time()
         xb = self._path_to_xb(filepaths)
+        ids = np.array(list(map(path_to_id, filepaths)), dtype=np.int64)
         logging.info("%d embeddings loaded %.3f s", xb.shape[0], time.time() - t0)
 
-        ids = np.array(list(map(path_to_id, filepaths)), dtype=np.int64)
-
-        if train_count < 40000:
+        if train_count < 10000:
             d = self.embedding_service.dim()
             faiss_index = FaissIndex(d)
             faiss_index.add(xb, ids)
             return faiss_index
 
-        faiss_index = self._new_index(nlist=int(train_count / 800))
+        faiss_index = self._new_index(nlist=int(train_count / 39))
 
         logging.info("Training...")
         t0 = time.time()
@@ -137,7 +136,7 @@ class FaissImageIndex(pb2_grpc.ImageIndexServicer):
             for filepaths in chunks(all_filepaths[train_count:], 20000):
                 t0 = time.time()
                 xb = self._path_to_xb(filepaths)
-                ids = np.array(map(path_to_id, filepaths), dtype=np.int64)
+                ids = np.array(list(map(path_to_id, filepaths)), dtype=np.int64)
                 faiss_index.add(xb, ids)
                 logging.info("%d embeddings added %.3f s", xb.shape[0], time.time() - t0)
             logging.info("Total %d embeddings added", faiss_index.ntotal())
